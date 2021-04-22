@@ -9,15 +9,14 @@ public class PlayerController : MonoBehaviour
 
 
     //[Header("References")]
-
-    [SerializeField]
-    private int currentScore = 0;
+    ScoreSystem scoreSystem = null;
     CharacterController charController = null;
 
     // Start is called before the first frame update
     void Start()
     {
         charController = GetComponent<CharacterController>();
+        scoreSystem = FindObjectOfType<ScoreSystem>();
     }
 
     // Update is called once per frame
@@ -44,9 +43,12 @@ public class PlayerController : MonoBehaviour
             if (star != null)
             {
                 int pickUpValue = star.GetPickedUp();
-                
+
                 //only add score if star is valid
-                currentScore += pickUpValue == -1 ? 0 : pickUpValue;
+                pickUpValue = pickUpValue == -1 ? 0 : pickUpValue;
+
+                //add score to score system
+                scoreSystem.AddScore(pickUpValue);
             }
         }
     }
