@@ -10,6 +10,8 @@ public class PlayerController : MonoBehaviour
 
     //[Header("References")]
 
+    [SerializeField]
+    private int currentScore = 0;
     CharacterController charController = null;
 
     // Start is called before the first frame update
@@ -41,8 +43,10 @@ public class PlayerController : MonoBehaviour
             Pickup star = other.GetComponent<Pickup>();
             if (star != null)
             {
-                star.GetPickedUp(); //needed -> Check return value to ensure star is valid!
-                Debug.Log("star detected");
+                int pickUpValue = star.GetPickedUp();
+                
+                //only add score if star is valid
+                currentScore += pickUpValue == -1 ? 0 : pickUpValue;
             }
         }
     }
