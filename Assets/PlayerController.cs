@@ -31,4 +31,19 @@ public class PlayerController : MonoBehaviour
         //update character controller
         charController.SimpleMove(movementVector);
     }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        //check if other object is a star
+        if (other.CompareTag("Star"))
+        {
+            //pickup star if pick up script found
+            Pickup star = other.GetComponent<Pickup>();
+            if (star != null)
+            {
+                star.GetPickedUp(); //needed -> Check return value to ensure star is valid!
+                Debug.Log("star detected");
+            }
+        }
+    }
 }
