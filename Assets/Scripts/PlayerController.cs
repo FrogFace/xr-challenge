@@ -9,13 +9,14 @@ public class PlayerController : MonoBehaviour
 
 
     //[Header("References")]
-
+    ScoreSystem scoreSystem = null;
     CharacterController charController = null;
 
     // Start is called before the first frame update
     void Start()
     {
         charController = GetComponent<CharacterController>();
+        scoreSystem = FindObjectOfType<ScoreSystem>();
     }
 
     // Update is called once per frame
@@ -30,5 +31,25 @@ public class PlayerController : MonoBehaviour
 
         //update character controller
         charController.SimpleMove(movementVector);
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        //check if other object is a star
+        if (other.CompareTag("Star"))
+        {
+            //pickup star if pick up script found
+            Pickup star = other.GetComponent<Pickup>();
+            if (star != null)
+            {
+                int pickUpValue = star.GetPickedUp();
+
+                //only add score if star is valid
+                pickUpValue = pickUpValue == -1 ? 0 : pickUpValue;
+
+                //add score to score system
+                scoreSystem.AddScore(pickUpValue);
+            }
+        }
     }
 }
