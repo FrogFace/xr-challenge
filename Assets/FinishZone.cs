@@ -4,17 +4,15 @@ using UnityEngine;
 
 public class FinishZone : MonoBehaviour
 {
+    [Header("References")]
     [SerializeField]
     private Material closedMaterial = null;
     [SerializeField]
     private Material openMaterial = null;
 
-    MeshRenderer meshRenderer = null;
-
-    [SerializeField]
+    private MeshRenderer meshRenderer = null;
+    private List<Pickup> pickupList = new List<Pickup>();
     private bool isOpen = false;
-
-    public List<Pickup> pickupList = new List<Pickup>();
 
     // Start is called before the first frame update
     void Start()
@@ -50,5 +48,14 @@ public class FinishZone : MonoBehaviour
 
         //update material to open
         meshRenderer.material = isOpen ? openMaterial : closedMaterial;
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        //complete level if exit is open and player is detected
+        if (isOpen && other.CompareTag("Player"))
+        {
+            //Exit/Complete Level
+        }
     }
 }

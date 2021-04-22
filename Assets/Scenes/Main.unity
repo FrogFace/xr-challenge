@@ -784,7 +784,7 @@ GameObject:
   - component: {fileID: 968319659}
   - component: {fileID: 968319658}
   m_Layer: 0
-  m_Name: finishZone
+  m_Name: FinishZone
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -804,8 +804,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   closedMaterial: {fileID: 2100000, guid: 8202800ae0ab6664f8472cfec4870c65, type: 2}
   openMaterial: {fileID: 2100000, guid: 8f13f2915db94d641a7f5f2ce5c9f9c5, type: 2}
-  isOpen: 0
-  pickupList: []
 --- !u!65 &968319659
 BoxCollider:
   m_ObjectHideFlags: 0
