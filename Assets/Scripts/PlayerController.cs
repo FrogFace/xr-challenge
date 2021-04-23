@@ -10,7 +10,6 @@ public class PlayerController : MonoBehaviour
     [SerializeField]
     private float rotationSpeed = 10f;
 
-
     //[Header("References")]
     ScoreSystem scoreSystem = null;
     CharacterController charController = null;
@@ -20,7 +19,6 @@ public class PlayerController : MonoBehaviour
     private bool isBlocking = false;
     private bool allowMovement = true;
 
-    
 
     // Start is called before the first frame update
     private void Start()
@@ -54,6 +52,9 @@ public class PlayerController : MonoBehaviour
         isAttacking = true;
 
         yield return new WaitForSeconds(0.55f);
+
+        TryDealDamage();
+
         animator.ResetTrigger("Attack");
 
         //Resets axis to prevent juttering animation
@@ -158,6 +159,17 @@ public class PlayerController : MonoBehaviour
                 //add score to score system
                 scoreSystem.AddScore(pickUpValue);
             }
+        }
+    }
+
+    private void TryDealDamage()
+    {
+        Collider[] hitColliders = Physics.OverlapSphere(transform.position + transform.forward, 0.8f);
+
+        foreach(Collider col in hitColliders)
+        {
+            //check if enemy/ breakable object
+            //deal dmaamge
         }
     }
 }
