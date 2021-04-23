@@ -33,14 +33,16 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     private void Update()
     {
-        isBlocking = Input.GetKey(KeyCode.Mouse1);
+        isBlocking = Input.GetAxisRaw("Block") == 1;
+        animator.SetBool("Blocking", isBlocking);
 
-        if (Input.GetKeyDown(KeyCode.Mouse0))
+        if (Input.GetAxisRaw("Attack") == 1)
         {
             animator.SetTrigger("Attack");
             if (!isAttacking) StartCoroutine(SwordAttack());
         }
 
+        //disable movement if attacking or blocking
         allowMovement = !(isBlocking || isAttacking);
 
         HandleMovement();
@@ -51,16 +53,19 @@ public class PlayerController : MonoBehaviour
     {
         isAttacking = true;
 
-        yield return new WaitForSeconds(0.6f);
-
+        yield return new WaitForSeconds(0.55f);
         animator.ResetTrigger("Attack");
-        Input.ResetInputAxes();
+
+        //Resets axis to prevent juttering animation
+        //Input.ResetInputAxes();
         isAttacking = false;
     }
 
+    /// <summary>
+    /// Rotates player to face velocity if moving otherwise rotates to face mouse position
+    /// </summary>
     private void HandleRotation()
     {
-        if (isAttacking) return;
         if (charController.velocity.magnitude > 0.2f)
         {
             //get player XZ velocity
@@ -76,6 +81,11 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Moves the characterController using horizontal and vertical Axis.
+    /// Updates animation controller with velocity.
+    /// will not move player if movement is disabled.
+    /// </summary>
     private void HandleMovement()
     {
         //get inputs
@@ -102,7 +112,10 @@ public class PlayerController : MonoBehaviour
         animator.SetFloat("Speed", Mathf.Lerp(animator.GetFloat("Speed"), charController.velocity.magnitude, 10 * Time.deltaTime));
     }
 
-
+    /// <summary>
+    /// Returns the world position of the mouse cursor
+    /// </summary>
+    /// <returns>The mouse cursors position in world space, returns vector3.zero if raycast fails to hit</returns>
     private Vector3 GetMouseWorldPosition()
     {
         //get mouse position as world positon
@@ -115,6 +128,10 @@ public class PlayerController : MonoBehaviour
         return Vector3.zero;
     }
 
+    /// <summary>
+    /// Rotates the player to face the target position over time
+    /// </summary>
+    /// <param name="targetPosition">The target position to look at</param>
     private void RotateToFaceWorldPosition(Vector3 targetPosition)
     {
         //align height with player
@@ -122,7 +139,6 @@ public class PlayerController : MonoBehaviour
 
         //aim player at world mouse position
         transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(targetPosition - transform.position), rotationSpeed * Time.deltaTime);
-
     }
 
     private void OnTriggerEnter(Collider other)
