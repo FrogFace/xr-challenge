@@ -10,7 +10,11 @@ public class PlayerController : MonoBehaviour
     [SerializeField]
     private float rotationSpeed = 10f;
 
-    //[Header("References")]
+    [Header("References")]
+    [SerializeField]
+    private Collider shieldcollider = null;
+
+
     ScoreSystem scoreSystem = null;
     CharacterController charController = null;
     Animator animator = null;
@@ -45,6 +49,7 @@ public class PlayerController : MonoBehaviour
     {
         isBlocking = Input.GetAxisRaw("Block") == 1;
         animator.SetBool("Blocking", isBlocking);
+        shieldcollider.enabled = isBlocking;
     }
 
     private void HandleAttacking()
