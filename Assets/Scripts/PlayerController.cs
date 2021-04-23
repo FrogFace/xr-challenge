@@ -23,7 +23,7 @@ public class PlayerController : MonoBehaviour
     private bool isBlocking = false;
     private bool isRolling = false;
     private bool allowMovement = true;
-    
+
 
     // Start is called before the first frame update
     private void Start()
@@ -38,53 +38,12 @@ public class PlayerController : MonoBehaviour
     {
         HandleBlocking();
         HandleAttacking();
+        HandleRolling();
 
         //disable movement if attacking or blocking
         allowMovement = !(isBlocking || isAttacking || isRolling);
 
         HandleMovement();
-
-        if (Input.GetAxisRaw("Roll") == 1 && allowMovement)
-        {
-            StartCoroutine(RollForward());
-        }
-
-        //HandleRotation();
-    }
-
-    IEnumerator RollForward()
-    {
-        //animator.SetTrigger("Roll");
-        isRolling = true;
-
-        yield return 0;
-
-        //get inputs
-        float xInput = Input.GetAxis("Horizontal");
-        float yInput = Input.GetAxis("Vertical");
-        Vector3 movement = new Vector3(xInput, 0, yInput);
-
-        if (movement != Vector3.zero) transform.rotation = Quaternion.LookRotation(movement);
-
-        /*
-        float t = 0f;
-        while(t < 0.8f)
-        {
-            t += Time.deltaTime;
-            charController.SimpleMove(transform.forward * 5f);
-            yield return 0;
-        }
-        */
-        animator.Play("Roll", 0);
-
-        while (animator.GetCurrentAnimatorStateInfo(0).IsName("Roll"))
-        {
-            charController.SimpleMove(transform.forward * 5f);
-            yield return 0;
-        }
-
-
-        isRolling = false;
     }
 
     private void HandleBlocking()
@@ -103,38 +62,11 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private IEnumerator SwordAttack()
+    private void HandleRolling()
     {
-        isAttacking = true;
-
-        yield return new WaitForSeconds(0.55f);
-
-        TryDealDamage();
-
-        animator.ResetTrigger("Attack");
-
-        //Resets axis to prevent juttering animation
-        //Input.ResetInputAxes();
-        isAttacking = false;
-    }
-
-    /// <summary>
-    /// Rotates player to face velocity if moving otherwise rotates to face mouse position
-    /// </summary>
-    private void HandleRotation()
-    {
-        if (charController.velocity.magnitude > 0.2f)
+        if (Input.GetAxisRaw("Roll") == 1 && allowMovement)
         {
-            //get player XZ velocity
-            Vector3 dirVec = new Vector3(charController.velocity.x, 0, charController.velocity.z);
-
-            //rotate to face movement direction
-            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(dirVec), rotationSpeed * Time.deltaTime);
-        }
-        else
-        {
-            //rotate to face mouse Position
-            RotateToFaceWorldPosition(GetMouseWorldPosition());
+            StartCoroutine(RollForward());
         }
     }
 
@@ -172,6 +104,66 @@ public class PlayerController : MonoBehaviour
 
         //update animator speed variable
         animator.SetFloat("Speed", Mathf.Lerp(animator.GetFloat("Speed"), charController.velocity.magnitude, 10 * Time.deltaTime));
+    }
+
+    private IEnumerator RollForward()
+    {
+        isRolling = true;
+
+        yield return 0;
+
+        //get inputs
+        float xInput = Input.GetAxis("Horizontal");
+        float yInput = Input.GetAxis("Vertical");
+        Vector3 movement = new Vector3(xInput, 0, yInput);
+
+        if (movement != Vector3.zero) transform.rotation = Quaternion.LookRotation(movement);
+
+        animator.Play("Roll", 0);
+
+        while (animator.GetCurrentAnimatorStateInfo(0).IsName("Roll"))
+        {
+            charController.SimpleMove(transform.forward * 5f);
+            yield return 0;
+        }
+
+
+        isRolling = false;
+    }
+
+    private IEnumerator SwordAttack()
+    {
+        isAttacking = true;
+
+        yield return new WaitForSeconds(0.55f);
+
+        TryDealDamage();
+
+        animator.ResetTrigger("Attack");
+
+        //Resets axis to prevent juttering animation
+        //Input.ResetInputAxes();
+        isAttacking = false;
+    }
+
+    /// <summary>
+    /// Rotates player to face velocity if moving otherwise rotates to face mouse position
+    /// </summary>
+    private void HandleRotation()
+    {
+        if (charController.velocity.magnitude > 0.2f)
+        {
+            //get player XZ velocity
+            Vector3 dirVec = new Vector3(charController.velocity.x, 0, charController.velocity.z);
+
+            //rotate to face movement direction
+            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(dirVec), rotationSpeed * Time.deltaTime);
+        }
+        else
+        {
+            //rotate to face mouse Position
+            RotateToFaceWorldPosition(GetMouseWorldPosition());
+        }
     }
 
     /// <summary>
