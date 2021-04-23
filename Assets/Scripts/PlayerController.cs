@@ -20,6 +20,8 @@ public class PlayerController : MonoBehaviour
     private bool isBlocking = false;
     private bool allowMovement = true;
 
+    
+
     // Start is called before the first frame update
     private void Start()
     {
@@ -48,6 +50,7 @@ public class PlayerController : MonoBehaviour
     private IEnumerator SwordAttack()
     {
         isAttacking = true;
+
         yield return new WaitForSeconds(0.6f);
 
         animator.ResetTrigger("Attack");
