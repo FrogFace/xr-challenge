@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
@@ -6,21 +7,73 @@ public class PlayerController : MonoBehaviour
     [Header("Config")]
     [SerializeField]
     private float movementSpeed = 1f;
+    [SerializeField]
+    private float rotationSpeed = 10f;
 
 
     //[Header("References")]
     ScoreSystem scoreSystem = null;
     CharacterController charController = null;
+    Animator animator = null;
+
+    private bool isAttacking = false;
+    private bool isBlocking = false;
+    private bool allowMovement = true;
 
     // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
-        charController = GetComponent<CharacterController>();
         scoreSystem = FindObjectOfType<ScoreSystem>();
+        charController = GetComponent<CharacterController>();
+        animator = GetComponentInChildren<Animator>();
     }
 
     // Update is called once per frame
-    void Update()
+    private void Update()
+    {
+        isBlocking = Input.GetKey(KeyCode.Mouse1);
+
+        if (Input.GetKeyDown(KeyCode.Mouse0))
+        {
+            animator.SetTrigger("Attack");
+            if (!isAttacking) StartCoroutine(SwordAttack());
+        }
+
+        allowMovement = !(isBlocking || isAttacking);
+
+        HandleMovement();
+        HandleRotation();
+    }
+
+    private IEnumerator SwordAttack()
+    {
+        isAttacking = true;
+        yield return new WaitForSeconds(0.6f);
+
+        animator.ResetTrigger("Attack");
+        Input.ResetInputAxes();
+        isAttacking = false;
+    }
+
+    private void HandleRotation()
+    {
+        if (isAttacking) return;
+        if (charController.velocity.magnitude > 0.2f)
+        {
+            //get player XZ velocity
+            Vector3 dirVec = new Vector3(charController.velocity.x, 0, charController.velocity.z);
+
+            //rotate to face movement direction
+            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(dirVec), rotationSpeed * Time.deltaTime);
+        }
+        else
+        {
+            //rotate to face mouse Position
+            RotateToFaceWorldPosition(GetMouseWorldPosition());
+        }
+    }
+
+    private void HandleMovement()
     {
         //get inputs
         float xInput = Input.GetAxis("Horizontal");
@@ -29,8 +82,44 @@ public class PlayerController : MonoBehaviour
         //create movement vector with movement speed
         Vector3 movementVector = new Vector3(xInput, 0, yInput) * movementSpeed;
 
+        //clamp movespeed to prevent faster diagagonal movement
+        movementVector = Vector3.ClampMagnitude(movementVector, movementSpeed);
+
         //update character controller
-        charController.SimpleMove(movementVector);
+        if (allowMovement)
+        {
+            charController.SimpleMove(movementVector);
+        }
+        else
+        {
+            charController.SimpleMove(Vector3.zero);
+        }
+
+        //update animator speed variable
+        animator.SetFloat("Speed", Mathf.Lerp(animator.GetFloat("Speed"), charController.velocity.magnitude, 10 * Time.deltaTime));
+    }
+
+
+    private Vector3 GetMouseWorldPosition()
+    {
+        //get mouse position as world positon
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        if (Physics.Raycast(ray, out RaycastHit hitData, 1000))
+        {
+            return hitData.point;
+        }
+
+        return Vector3.zero;
+    }
+
+    private void RotateToFaceWorldPosition(Vector3 targetPosition)
+    {
+        //align height with player
+        targetPosition.y = transform.position.y;
+
+        //aim player at world mouse position
+        transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(targetPosition - transform.position), rotationSpeed * Time.deltaTime);
+
     }
 
     private void OnTriggerEnter(Collider other)
