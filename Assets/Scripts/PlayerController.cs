@@ -21,8 +21,9 @@ public class PlayerController : MonoBehaviour
 
     private bool isAttacking = false;
     private bool isBlocking = false;
+    private bool isRolling = false;
     private bool allowMovement = true;
-
+    
 
     // Start is called before the first frame update
     private void Start()
@@ -39,17 +40,58 @@ public class PlayerController : MonoBehaviour
         HandleAttacking();
 
         //disable movement if attacking or blocking
-        allowMovement = !(isBlocking || isAttacking);
+        allowMovement = !(isBlocking || isAttacking || isRolling);
 
         HandleMovement();
+
+        if (Input.GetAxisRaw("Roll") == 1 && allowMovement)
+        {
+            StartCoroutine(RollForward());
+        }
+
         //HandleRotation();
+    }
+
+    IEnumerator RollForward()
+    {
+        //animator.SetTrigger("Roll");
+        isRolling = true;
+
+        yield return 0;
+
+        //get inputs
+        float xInput = Input.GetAxis("Horizontal");
+        float yInput = Input.GetAxis("Vertical");
+        Vector3 movement = new Vector3(xInput, 0, yInput);
+
+        if (movement != Vector3.zero) transform.rotation = Quaternion.LookRotation(movement);
+
+        /*
+        float t = 0f;
+        while(t < 0.8f)
+        {
+            t += Time.deltaTime;
+            charController.SimpleMove(transform.forward * 5f);
+            yield return 0;
+        }
+        */
+        animator.Play("Roll", 0);
+
+        while (animator.GetCurrentAnimatorStateInfo(0).IsName("Roll"))
+        {
+            charController.SimpleMove(transform.forward * 5f);
+            yield return 0;
+        }
+
+
+        isRolling = false;
     }
 
     private void HandleBlocking()
     {
         isBlocking = Input.GetAxisRaw("Block") == 1;
         animator.SetBool("Blocking", isBlocking);
-        shieldcollider.enabled = isBlocking && !isAttacking;
+        shieldcollider.enabled = isBlocking && !isAttacking && !isRolling;
     }
 
     private void HandleAttacking()
@@ -118,16 +160,16 @@ public class PlayerController : MonoBehaviour
         {
             charController.SimpleMove(movementVector);
         }
-        else
+        else if (!isRolling)
         {
             charController.SimpleMove(Vector3.zero);
         }
 
-        if(movementVector!= Vector3.zero)
+        if (movementVector != Vector3.zero && !isRolling)
         {
             transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(movementVector), rotationSpeed * Time.deltaTime);
         }
-        
+
         //update animator speed variable
         animator.SetFloat("Speed", Mathf.Lerp(animator.GetFloat("Speed"), charController.velocity.magnitude, 10 * Time.deltaTime));
     }
