@@ -31,20 +31,29 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     private void Update()
     {
-        isBlocking = Input.GetAxisRaw("Block") == 1;
-        animator.SetBool("Blocking", isBlocking);
-
-        if (Input.GetAxisRaw("Attack") == 1)
-        {
-            animator.SetTrigger("Attack");
-            if (!isAttacking) StartCoroutine(SwordAttack());
-        }
+        HandleBlocking();
+        HandleAttacking();
 
         //disable movement if attacking or blocking
         allowMovement = !(isBlocking || isAttacking);
 
         HandleMovement();
-        HandleRotation();
+        //HandleRotation();
+    }
+
+    private void HandleBlocking()
+    {
+        isBlocking = Input.GetAxisRaw("Block") == 1;
+        animator.SetBool("Blocking", isBlocking);
+    }
+
+    private void HandleAttacking()
+    {
+        if (Input.GetAxisRaw("Attack") == 1)
+        {
+            animator.SetTrigger("Attack");
+            if (!isAttacking) StartCoroutine(SwordAttack());
+        }
     }
 
     private IEnumerator SwordAttack()
@@ -109,6 +118,11 @@ public class PlayerController : MonoBehaviour
             charController.SimpleMove(Vector3.zero);
         }
 
+        if(movementVector!= Vector3.zero)
+        {
+            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(movementVector), rotationSpeed * Time.deltaTime);
+        }
+        
         //update animator speed variable
         animator.SetFloat("Speed", Mathf.Lerp(animator.GetFloat("Speed"), charController.velocity.magnitude, 10 * Time.deltaTime));
     }
@@ -166,7 +180,7 @@ public class PlayerController : MonoBehaviour
     {
         Collider[] hitColliders = Physics.OverlapSphere(transform.position + transform.forward, 0.8f);
 
-        foreach(Collider col in hitColliders)
+        foreach (Collider col in hitColliders)
         {
             //check if enemy/ breakable object
             //deal dmaamge
