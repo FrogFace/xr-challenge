@@ -49,7 +49,7 @@ public class PlayerController : MonoBehaviour
     {
         isBlocking = Input.GetAxisRaw("Block") == 1;
         animator.SetBool("Blocking", isBlocking);
-        shieldcollider.enabled = isBlocking;
+        shieldcollider.enabled = isBlocking && !isAttacking;
     }
 
     private void HandleAttacking()
