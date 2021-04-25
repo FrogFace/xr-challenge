@@ -30,7 +30,7 @@ public class EnemyController : MonoBehaviour
     private bool isAttacking = false;
 
     // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
         player = GameObject.FindGameObjectWithTag("Player").transform;
         agent = GetComponent<NavMeshAgent>();
@@ -40,7 +40,7 @@ public class EnemyController : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
         //update animator speed for movement blend tree
         animator.SetFloat("Speed", Mathf.Lerp(animator.GetFloat("Speed"), agent.velocity.magnitude, 10 * Time.deltaTime));
@@ -137,6 +137,34 @@ public class EnemyController : MonoBehaviour
         animator.SetTrigger("Stagger");
 
         //<-- update Health Bar UI
+    }
+
+    public void TryAttackPlayer()
+    {
+        bool hitShield = false;
+        bool hitPlayer = false;
+
+        Collider[] colliderHitArray = Physics.OverlapSphere(transform.position + transform.forward + transform.up, 0.7f);
+        foreach (Collider col in colliderHitArray)
+        {
+            if (col.CompareTag("Shield")) hitShield = true;
+            if (col.CompareTag("Player")) hitPlayer = true;
+
+        }
+
+        if (hitShield)
+        {
+            StopCoroutine(SwordAttack());
+            isAttacking = false;
+            attackCooldownTimer = 0f;
+
+            //player stagger animation
+            animator.SetTrigger("Stagger");
+        }
+        else if (hitPlayer)
+        {
+            player.GetComponent<PlayerController>().ModifyHealth(10);
+        }
     }
 
     private void RotateToFacePlayer()
