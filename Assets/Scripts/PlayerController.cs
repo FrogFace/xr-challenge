@@ -223,6 +223,10 @@ public class PlayerController : MonoBehaviour
         {
             //check if enemy/ breakable object
             //deal dmaamge
+            if (col.CompareTag("Enemy"))
+            {
+                col.GetComponent<EnemyController>().ModifyHealth(20);
+            }
         }
     }
 }
