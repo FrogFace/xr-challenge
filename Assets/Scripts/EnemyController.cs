@@ -22,6 +22,10 @@ public class EnemyController : MonoBehaviour
     private ParticleSystem[] hitEffects;
     [SerializeField]
     private ParticleSystem[] digParticles;
+    [SerializeField]
+    private GameObject[] characterModels;
+    [SerializeField]
+    private GameObject[] weaponModels;
 
     private Transform player = null;
     private NavMeshAgent agent = null;
@@ -37,6 +41,7 @@ public class EnemyController : MonoBehaviour
         animator = GetComponentInChildren<Animator>();
 
         if (startUnderground) StartCoroutine(DigOutOfGround());
+        RandomizeCharacterModel();
     }
 
     // Update is called once per frame
@@ -84,6 +89,25 @@ public class EnemyController : MonoBehaviour
 
         //enable other behaviors once digging  animtation finished
         enabled = true;
+    }
+
+    private void RandomizeCharacterModel()
+    {
+        int rndNum = Random.Range(0, characterModels.Length);
+
+        for(int i = 0; i < characterModels.Length; i++)
+        {
+            if (i == rndNum) characterModels[i].SetActive(true);
+            else characterModels[i].SetActive(false);
+        }
+
+        rndNum = Random.Range(0, weaponModels.Length);
+
+        for (int i = 0; i < weaponModels.Length; i++)
+        {
+            if (i == rndNum) weaponModels[i].SetActive(true);
+            else weaponModels[i].SetActive(false);
+        }
     }
 
     private void EnterDeathState()
