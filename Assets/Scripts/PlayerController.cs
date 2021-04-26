@@ -9,6 +9,8 @@ public class PlayerController : MonoBehaviour
     private float movementSpeed = 1f;
     [SerializeField]
     private float rotationSpeed = 10f;
+    [SerializeField]
+    private float maxHealth = 100f;
 
     [Header("References")]
     [SerializeField]
@@ -23,6 +25,8 @@ public class PlayerController : MonoBehaviour
     private bool isBlocking = false;
     private bool isRolling = false;
     private bool allowMovement = true;
+
+    private float currentHealth = 100f;
 
 
     // Start is called before the first frame update
@@ -133,16 +137,26 @@ public class PlayerController : MonoBehaviour
 
     private IEnumerator SwordAttack()
     {
+        //begin attack, disable agent movement
         isAttacking = true;
 
-        yield return new WaitForSeconds(0.55f);
+        //start attack animation
+        animator.SetTrigger("Attack");
+        yield return 0;
 
-        TryDealDamage();
+        //wait while transitioning to attack animation
+        while (animator.IsInTransition(0)) yield return 0;
 
-        animator.ResetTrigger("Attack");
+        //wait while attack animation playing
+        while (animator.GetCurrentAnimatorStateInfo(0).IsName("Attack 1")
+            || animator.GetCurrentAnimatorStateInfo(0).IsName("Attack 2")
+            || animator.GetCurrentAnimatorStateInfo(0).IsName("Attack 3"))
+        {
+            //reset attack trigger during first 50% of animation
+            if (animator.GetCurrentAnimatorStateInfo(0).normalizedTime <= 0.5f) animator.ResetTrigger("Attack");
+            yield return 0;
+        }
 
-        //Resets axis to prevent juttering animation
-        //Input.ResetInputAxes();
         isAttacking = false;
     }
 
@@ -215,7 +229,7 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private void TryDealDamage()
+    public void TryDealDamage()
     {
         Collider[] hitColliders = Physics.OverlapSphere(transform.position + transform.forward, 0.8f);
 
@@ -223,6 +237,56 @@ public class PlayerController : MonoBehaviour
         {
             //check if enemy/ breakable object
             //deal dmaamge
+            if (col.CompareTag("Enemy"))
+            {
+                col.GetComponent<EnemyController>().ModifyHealth(20);
+            }
         }
+    }
+
+    private void EnterDeathState()
+    {
+        //stop agent and start death animation
+        animator.SetTrigger("Die");
+
+        // <-- spawn remains / effects here
+
+        //disable collider and EnemyController
+        GetComponent<Collider>().enabled = false;
+        charController.enabled = false;
+        enabled = false;
+    }
+
+    /// <summary>
+    /// Change the current health value of the player 
+    /// </summary>
+    /// <param name="changeValue">The ammount of health removed</param>
+    public void ModifyHealth(int changeValue)
+    {
+        //reduce current health by value, clamp between 0 and maxHealth
+        currentHealth -= changeValue;
+        currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
+
+        //play hit particle effects
+        //foreach (ParticleSystem effect in hitEffects) effect.Play();
+
+        //Death Check, kill if health is 0
+        if (currentHealth <= 0f)
+        {
+            EnterDeathState();
+            return;
+        }
+
+        //restart attack cooldown if attacking
+        if (isAttacking)
+        {
+            StopCoroutine(SwordAttack());
+            isAttacking = false;
+        }
+
+        //player stagger animation
+        animator.SetTrigger("Stagger");
+
+        //<-- update Health Bar UI
     }
 }

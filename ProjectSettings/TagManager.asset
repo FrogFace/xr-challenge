@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Star
   - Shield
+  - Enemy
   layers:
   - Default
   - TransparentFX
