@@ -119,7 +119,7 @@ public class EnemyController : MonoBehaviour
         // <-- spawn remains / effects here
 
         //disable collider and EnemyController
-        GetComponentInParent<Collider>().enabled = false;
+        GetComponent<Collider>().enabled = false;
         enabled = false;
     }
 

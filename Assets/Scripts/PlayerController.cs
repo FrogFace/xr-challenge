@@ -244,6 +244,19 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    private void EnterDeathState()
+    {
+        //stop agent and start death animation
+        animator.SetTrigger("Die");
+
+        // <-- spawn remains / effects here
+
+        //disable collider and EnemyController
+        GetComponent<Collider>().enabled = false;
+        charController.enabled = false;
+        enabled = false;
+    }
+
     /// <summary>
     /// Change the current health value of the player 
     /// </summary>
@@ -260,7 +273,7 @@ public class PlayerController : MonoBehaviour
         //Death Check, kill if health is 0
         if (currentHealth <= 0f)
         {
-            //EnterDeathState();
+            EnterDeathState();
             return;
         }
 
