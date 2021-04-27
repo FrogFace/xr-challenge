@@ -113,13 +113,15 @@ public class EnemyController : MonoBehaviour
     private void EnterDeathState()
     {
         //stop agent and start death animation
-        agent.isStopped = true;
+        agent.enabled = false;
         animator.SetTrigger("Die");
 
         // <-- spawn remains / effects here
 
         //disable collider and EnemyController
         GetComponent<Collider>().enabled = false;
+        StartCoroutine(DespawnDeadEnemy());
+
         enabled = false;
     }
 
@@ -162,6 +164,7 @@ public class EnemyController : MonoBehaviour
 
         //<-- update Health Bar UI
     }
+
 
     public void TryAttackPlayer()
     {
@@ -220,5 +223,25 @@ public class EnemyController : MonoBehaviour
         //restart attackCooldown
         attackCooldownTimer = 0;
         isAttacking = false;
+    }
+
+    private IEnumerator DespawnDeadEnemy()
+    {
+        //wait for 5 seconds
+        yield return new WaitForSeconds(2.5f);
+
+        //move enemy body underground slowly for 5 seconds
+        float t = 0f;
+        while (t <= 5f)
+        {
+            t += Time.deltaTime;
+
+            //move enemy body downwards
+            transform.position -= Vector3.up * 0.2f * Time.deltaTime;
+            yield return 0;
+        }
+
+        //disable the gameobject
+        this.gameObject.SetActive(false);
     }
 }
