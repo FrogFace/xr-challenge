@@ -48,6 +48,10 @@ public class PlayerController : MonoBehaviour
         allowMovement = !(isBlocking || isAttacking || isRolling);
 
         HandleMovement();
+
+
+
+        Camera.main.transform.position = transform.position + new Vector3(0, 10, -1);
     }
 
     private void HandleBlocking()
@@ -240,6 +244,10 @@ public class PlayerController : MonoBehaviour
             if (col.CompareTag("Enemy"))
             {
                 col.GetComponent<EnemyController>().ModifyHealth(20);
+            }
+            else if (col.CompareTag("Breakable"))
+            {
+                col.GetComponent<BreakableObject>().ModifyHealth(20);
             }
         }
     }
