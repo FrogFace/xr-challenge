@@ -9,9 +9,10 @@ public class FinishZone : MonoBehaviour
     private Material closedMaterial = null;
     [SerializeField]
     private Material openMaterial = null;
+    [SerializeField]
+    private Pickup[] pickupArray;
 
     private MeshRenderer meshRenderer = null;
-    private List<Pickup> pickupList = new List<Pickup>();
     private bool isOpen = false;
 
     // Start is called before the first frame update
@@ -21,12 +22,8 @@ public class FinishZone : MonoBehaviour
         meshRenderer = GetComponent<MeshRenderer>();
         meshRenderer.material = closedMaterial;
 
-        //find all of the stars in the scene adn add themt o the list
-        pickupList.Clear();
-        pickupList.AddRange(FindObjectsOfType<Pickup>());
-
         //subscribe to all of the star pickup events
-        foreach (Pickup star in pickupList) star.OnPickUp += UnlockCheck;
+        foreach (Pickup star in pickupArray) star.OnPickUp += UnlockCheck;
     }
 
     /// <summary>
@@ -38,13 +35,13 @@ public class FinishZone : MonoBehaviour
     {
         //loop through all stars and count each collected
         int totalCollected = 0;
-        for (int i = 0; i < pickupList.Count; i++)
+        for (int i = 0; i < pickupArray.Length; i++)
         {
-            if (pickupList[i].IsCollected) totalCollected++;
+            if (pickupArray[i].IsCollected) totalCollected++;
         }
 
         //if all stars are collected open door
-        if (totalCollected == pickupList.Count) isOpen = true;
+        if (totalCollected == pickupArray.Length) isOpen = true;
 
         //update material to open
         meshRenderer.material = isOpen ? openMaterial : closedMaterial;
@@ -56,6 +53,7 @@ public class FinishZone : MonoBehaviour
         if (isOpen && other.CompareTag("Player"))
         {
             //Exit/Complete Level
+            Time.timeScale = 0;
         }
     }
 }

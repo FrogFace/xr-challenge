@@ -7,6 +7,8 @@ TagManager:
   - Star
   - Shield
   - Enemy
+  - Breakable
+  - Gold
   layers:
   - Default
   - TransparentFX
