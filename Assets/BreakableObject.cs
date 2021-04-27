@@ -31,6 +31,7 @@ public class BreakableObject : MonoBehaviour
             damagedModel.SetActive(false);
             destroyedModel.SetActive(true);
             GetComponent<Collider>().enabled = false;
+            enabled = false;
         }
     }
 }
