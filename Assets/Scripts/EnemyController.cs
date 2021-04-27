@@ -27,6 +27,8 @@ public class EnemyController : MonoBehaviour
     private GameObject[] characterModels;
     [SerializeField]
     private GameObject[] weaponModels;
+    [SerializeField]
+    private GameManager gameManager = null;
 
     private int currentHealth = 60;
     private Transform player = null;
@@ -34,7 +36,7 @@ public class EnemyController : MonoBehaviour
     private Animator animator = null;
     private float attackCooldownTimer = 0f;
     private bool isAttacking = false;
-    private ScoreSystem scoreSystem = null;
+    private UIManager scoreSystem = null;
 
     // Start is called before the first frame update
     private void Start()
@@ -42,7 +44,7 @@ public class EnemyController : MonoBehaviour
         player = GameObject.FindGameObjectWithTag("Player").transform;
         agent = GetComponent<NavMeshAgent>();
         animator = GetComponentInChildren<Animator>();
-        scoreSystem = FindObjectOfType<ScoreSystem>();
+        gameManager = FindObjectOfType<GameManager>();
 
         if (startUnderground) StartCoroutine(DigOutOfGround());
         RandomizeCharacterModel();
@@ -127,7 +129,7 @@ public class EnemyController : MonoBehaviour
         StartCoroutine(DespawnDeadEnemy());
 
 
-        scoreSystem.AddScore(scoreValue);
+        gameManager.AddScore(scoreValue);
         enabled = false;
     }
 
