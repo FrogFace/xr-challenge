@@ -215,14 +215,14 @@ public class PlayerController : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        //check if other object is a star
-        if (other.CompareTag("Star"))
+        //check if other object is a pickup item
+        if (other.CompareTag("Star") || other.CompareTag("Gold"))
         {
             //pickup star if pick up script found
-            Pickup star = other.GetComponent<Pickup>();
-            if (star != null)
+            Pickup item = other.GetComponent<Pickup>();
+            if (item != null)
             {
-                int pickUpValue = star.GetPickedUp();
+                int pickUpValue = item.GetPickedUp();
 
                 //only add score if star is valid
                 pickUpValue = pickUpValue == -1 ? 0 : pickUpValue;

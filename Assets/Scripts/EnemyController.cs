@@ -7,7 +7,6 @@ public class EnemyController : MonoBehaviour
     [Header("Config")]
     [SerializeField]
     private int maxHealth = 60;
-    private int currentHealth = 60;
     [SerializeField]
     private float rotationSpeed = 10f;
     [SerializeField]
@@ -16,6 +15,8 @@ public class EnemyController : MonoBehaviour
     private float attackCooldown = 3f;
     [SerializeField]
     private bool startUnderground = false;
+    [SerializeField]
+    private int scoreValue = 100;
 
     [Header("References")]
     [SerializeField]
@@ -27,11 +28,13 @@ public class EnemyController : MonoBehaviour
     [SerializeField]
     private GameObject[] weaponModels;
 
+    private int currentHealth = 60;
     private Transform player = null;
     private NavMeshAgent agent = null;
     private Animator animator = null;
     private float attackCooldownTimer = 0f;
     private bool isAttacking = false;
+    private ScoreSystem scoreSystem = null;
 
     // Start is called before the first frame update
     private void Start()
@@ -39,6 +42,7 @@ public class EnemyController : MonoBehaviour
         player = GameObject.FindGameObjectWithTag("Player").transform;
         agent = GetComponent<NavMeshAgent>();
         animator = GetComponentInChildren<Animator>();
+        scoreSystem = FindObjectOfType<ScoreSystem>();
 
         if (startUnderground) StartCoroutine(DigOutOfGround());
         RandomizeCharacterModel();
@@ -95,7 +99,7 @@ public class EnemyController : MonoBehaviour
     {
         int rndNum = Random.Range(0, characterModels.Length);
 
-        for(int i = 0; i < characterModels.Length; i++)
+        for (int i = 0; i < characterModels.Length; i++)
         {
             if (i == rndNum) characterModels[i].SetActive(true);
             else characterModels[i].SetActive(false);
@@ -122,6 +126,8 @@ public class EnemyController : MonoBehaviour
         GetComponent<Collider>().enabled = false;
         StartCoroutine(DespawnDeadEnemy());
 
+
+        scoreSystem.AddScore(scoreValue);
         enabled = false;
     }
 
@@ -196,7 +202,7 @@ public class EnemyController : MonoBehaviour
 
     private void RotateToFacePlayer()
     {
-        agent.isStopped = true;
+        if (agent.isOnNavMesh) agent.isStopped = true;
         Vector3 playerDirection = player.position - transform.position;
         playerDirection.y = 0f;
         transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(playerDirection), rotationSpeed * Time.deltaTime);
