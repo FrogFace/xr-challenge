@@ -33,8 +33,6 @@ public class FinishZone : MonoBehaviour
     /// <param name="obj"></param>
     private void UnlockCheck(Pickup obj)
     {
-        Debug.Log("Checking star");
-
         //loop through all stars and count each collected
         int totalCollected = 0;
         for (int i = 0; i < pickupArray.Length; i++)
