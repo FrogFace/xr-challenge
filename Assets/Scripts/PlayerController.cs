@@ -17,6 +17,12 @@ public class PlayerController : MonoBehaviour
     [SerializeField]
     private Collider shieldcollider = null;
 
+    [Header("Audio Clips")]
+    [SerializeField]
+    private AudioClip dryFootstepClip = null;
+    [SerializeField]
+    private AudioClip wetFootstepClip = null;
+
 
     UIManager uiManager = null;
     GameManager gameManager = null;
@@ -265,10 +271,30 @@ public class PlayerController : MonoBehaviour
         charController.enabled = false;
         enabled = false;
 
-        yield return  new WaitForSeconds(3.5f);
+        yield return new WaitForSeconds(3.5f);
 
         gameManager.GameOver();
-    } 
+    }
+
+    /// <summary>
+    /// Plays a wet or dry footstep sound depending on current surface 
+    /// </summary>
+    public void PlayfootstepSound()
+    {
+        //check if standing in water
+        if (Physics.Raycast(transform.position, -Vector3.up, out RaycastHit hit))
+        {
+            if (hit.transform.CompareTag("Water"))
+            {
+                //play wetfootstep
+                AudioSource.PlayClipAtPoint(wetFootstepClip, transform.position, 0.3f);
+                return;
+            }
+        }
+
+        //play normal footstep
+        AudioSource.PlayClipAtPoint(dryFootstepClip, transform.position, 0.5f);
+    }
 
     /// <summary>
     /// Change the current health value of the player 
