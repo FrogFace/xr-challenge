@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
+using UnityEngine.SceneManagement;
 
 public class UIManager : MonoBehaviour
 {
@@ -13,9 +15,19 @@ public class UIManager : MonoBehaviour
     [SerializeField]
     private GameManager gameManager = null;
     [SerializeField]
-    private GameObject PauseUI = null; 
+    private GameObject PauseUI = null;
     [SerializeField]
-    private GameObject gameplayUI = null;  
+    private GameObject gameplayUI = null;
+    [SerializeField] 
+    GameObject exitHint = null;
+    [SerializeField]
+    private GameObject exitConfirmation = null;
+    [SerializeField]
+    private GameObject continueButton = null;
+    [SerializeField]
+    private GameObject cancelButton = null;
+    [SerializeField]
+    private string mainMenuScene = string.Empty;
 
     public void UpdateScoreText(int currentScore)
     {
@@ -36,5 +48,26 @@ public class UIManager : MonoBehaviour
     {
         PauseUI.SetActive(isPaused);
         gameplayUI.SetActive(!isPaused);
+        exitConfirmation.SetActive(false);
+
+        if (isPaused) EventSystem.current.SetSelectedGameObject(continueButton);
+    }
+
+    public void SetExitHint(bool active)
+    {
+        exitHint.SetActive(active);
+    }
+
+    public void ExitWarning()
+    {
+        PauseUI.SetActive(false);
+        exitConfirmation.SetActive(true);
+
+        EventSystem.current.SetSelectedGameObject(cancelButton);
+    }
+
+    public void ExitToMenu()
+    {
+        SceneManager.LoadScene(mainMenuScene);
     }
 }

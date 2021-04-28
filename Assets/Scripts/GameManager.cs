@@ -16,6 +16,8 @@ public class GameManager : MonoBehaviour
 
     public bool isPaused { get; private set; } = false;
 
+    private bool allowPause = true;
+
     private void Start()
     {
         //subscribe to all of the star pickup events
@@ -26,18 +28,19 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetButtonDown("Pause")) isPaused = !isPaused;
+        if (Input.GetButtonDown("Pause") && allowPause)
+        {
+            isPaused = !isPaused;
+            uiManager.SetPauseUI(isPaused);
+            Time.timeScale = isPaused ? 0 : 1;
+        }
+    }
 
-        if (isPaused)
-        {
-            Time.timeScale = 0;
-            uiManager.SetPauseUI(true);
-        }
-        else
-        {
-            Time.timeScale = 1;
-            uiManager.SetPauseUI(false);
-        }
+    public void UnpauseGame()
+    {
+        isPaused = false;
+        Time.timeScale = 1;
+        uiManager.SetPauseUI(false);
     }
 
     /// <summary>

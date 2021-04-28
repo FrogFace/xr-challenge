@@ -9,6 +9,8 @@ public class FinishZone : MonoBehaviour
     private Material closedMaterial = null;
     [SerializeField]
     private Material openMaterial = null;
+    [SerializeField]
+    private UIManager uiManager = null;
 
     private MeshRenderer meshRenderer = null;
     private bool isOpen = false;
@@ -35,7 +37,19 @@ public class FinishZone : MonoBehaviour
         if (isOpen && other.CompareTag("Player"))
         {
             //Exit/Complete Level
-            Time.timeScale = 0;
         }
+        else if (other.CompareTag("Player"))
+        {
+            uiManager.SetExitHint(true);
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            uiManager.SetExitHint(false);
+        }
+
     }
 }
