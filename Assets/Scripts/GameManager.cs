@@ -36,6 +36,18 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public void CompleteLevel()
+    {
+        //pause game
+        Time.timeScale = 0;
+
+        //open ui
+        uiManager.OpenLevelCompleteMenu();
+
+        //disable pausing
+        allowPause = false;
+    }
+
     public void UnpauseGame()
     {
         isPaused = false;

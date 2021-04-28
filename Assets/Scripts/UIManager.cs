@@ -21,11 +21,15 @@ public class UIManager : MonoBehaviour
     [SerializeField] 
     GameObject exitHint = null;
     [SerializeField]
-    private GameObject exitConfirmation = null;
+    private GameObject exitConfirmationUI = null;
+    [SerializeField]
+    private GameObject levelCompletionUI = null;
     [SerializeField]
     private GameObject continueButton = null;
     [SerializeField]
     private GameObject cancelButton = null;
+    [SerializeField]
+    private GameObject completionExitButton = null;
     [SerializeField]
     private string mainMenuScene = string.Empty;
 
@@ -44,11 +48,18 @@ public class UIManager : MonoBehaviour
         starText.text = $"Stars: {currentStars} / {totalStars}";
     }
 
+    public void OpenLevelCompleteMenu()
+    {
+        levelCompletionUI.SetActive(true);
+        gameplayUI.SetActive(false);
+        EventSystem.current.SetSelectedGameObject(completionExitButton);
+    }
+
     public void SetPauseUI(bool isPaused)
     {
         PauseUI.SetActive(isPaused);
         gameplayUI.SetActive(!isPaused);
-        exitConfirmation.SetActive(false);
+        exitConfirmationUI.SetActive(false);
 
         if (isPaused) EventSystem.current.SetSelectedGameObject(continueButton);
     }
@@ -61,7 +72,7 @@ public class UIManager : MonoBehaviour
     public void ExitWarning()
     {
         PauseUI.SetActive(false);
-        exitConfirmation.SetActive(true);
+        exitConfirmationUI.SetActive(true);
 
         EventSystem.current.SetSelectedGameObject(cancelButton);
     }

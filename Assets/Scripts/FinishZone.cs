@@ -11,6 +11,8 @@ public class FinishZone : MonoBehaviour
     private Material openMaterial = null;
     [SerializeField]
     private UIManager uiManager = null;
+    [SerializeField]
+    private GameManager gameManager = null;
 
     private MeshRenderer meshRenderer = null;
     private bool isOpen = false;
@@ -36,7 +38,7 @@ public class FinishZone : MonoBehaviour
         //complete level if exit is open and player is detected
         if (isOpen && other.CompareTag("Player"))
         {
-            //Exit/Complete Level
+            gameManager.CompleteLevel();
         }
         else if (other.CompareTag("Player"))
         {
