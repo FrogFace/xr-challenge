@@ -28,15 +28,16 @@ public class EnemyController : MonoBehaviour
     [SerializeField]
     private GameObject[] weaponModels;
     [SerializeField]
-    private GameManager gameManager = null;
+    private GameObject minimapIcon = null;
 
+
+    private GameManager gameManager = null;
     private int currentHealth = 60;
     private Transform player = null;
     private NavMeshAgent agent = null;
     private Animator animator = null;
     private float attackCooldownTimer = 0f;
     private bool isAttacking = false;
-    private UIManager scoreSystem = null;
 
     // Start is called before the first frame update
     private void Start()
@@ -235,6 +236,8 @@ public class EnemyController : MonoBehaviour
 
     private IEnumerator DespawnDeadEnemy()
     {
+        minimapIcon.SetActive(false);
+
         //wait for 5 seconds
         yield return new WaitForSeconds(2.5f);
 
