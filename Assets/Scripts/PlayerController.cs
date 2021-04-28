@@ -22,6 +22,8 @@ public class PlayerController : MonoBehaviour
     private AudioClip dryFootstepClip = null;
     [SerializeField]
     private AudioClip wetFootstepClip = null;
+    [SerializeField]
+    private AudioClip swordSwingClip = null;
 
 
     UIManager uiManager = null;
@@ -294,6 +296,15 @@ public class PlayerController : MonoBehaviour
 
         //play normal footstep
         AudioSource.PlayClipAtPoint(dryFootstepClip, transform.position, 0.5f);
+    }
+
+    /// <summary>
+    /// Plays a sword swing sound effect
+    /// </summary>
+    public void PlaySwordSwingSound()
+    {
+        //play normal footstep
+        AudioSource.PlayClipAtPoint(swordSwingClip, transform.position, 0.5f);
     }
 
     /// <summary>
