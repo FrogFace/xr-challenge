@@ -30,6 +30,16 @@ public class EnemyController : MonoBehaviour
     [SerializeField]
     private GameObject minimapIcon = null;
 
+    [Header("Audio Clips")]
+    [SerializeField]
+    private AudioClip swordSwingClip = null;
+    [SerializeField]
+    private AudioClip shieldHitClip = null;
+    [SerializeField]
+    private AudioClip diggingClip = null;
+    [SerializeField]
+    private AudioClip hitReactionclip = null;
+
 
     private GameManager gameManager = null;
     private int currentHealth = 60;
@@ -83,6 +93,7 @@ public class EnemyController : MonoBehaviour
         //prevent other behavior runnign while digging animation active
         enabled = false;
         animator.Play("DigOut");
+        AudioSource.PlayClipAtPoint(diggingClip, transform.position, 1);
 
         //Randomise digging animation speed for variation
         animator.SetFloat("DigSpeedModifier", Random.Range(0.8f, 1.2f));
@@ -153,6 +164,8 @@ public class EnemyController : MonoBehaviour
         //play hit particle effects
         foreach (ParticleSystem effect in hitEffects) effect.Play();
 
+        AudioSource.PlayClipAtPoint(hitReactionclip, transform.position, 1);
+
         //Death Check, kill if health is 0
         if (currentHealth <= 0f)
         {
@@ -171,7 +184,7 @@ public class EnemyController : MonoBehaviour
         //player stagger animation
         animator.SetTrigger("Stagger");
 
-        //<-- update Health Bar UI
+        
     }
 
 
@@ -196,6 +209,8 @@ public class EnemyController : MonoBehaviour
 
             //player stagger animation
             animator.SetTrigger("Stagger");
+
+            AudioSource.PlayClipAtPoint(shieldHitClip, transform.position, 1);
         }
         else if (hitPlayer)
         {
@@ -209,6 +224,15 @@ public class EnemyController : MonoBehaviour
         Vector3 playerDirection = player.position - transform.position;
         playerDirection.y = 0f;
         transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(playerDirection), rotationSpeed * Time.deltaTime);
+    }
+
+    /// <summary>
+    /// Plays a sword swing sound effect
+    /// </summary>
+    public void PlaySwordSwingSound()
+    {
+        //play normal footstep
+        AudioSource.PlayClipAtPoint(swordSwingClip, transform.position, 0.5f);
     }
 
     private IEnumerator SwordAttack()
