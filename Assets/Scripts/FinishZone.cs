@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class FinishZone : MonoBehaviour
 {
@@ -25,6 +23,10 @@ public class FinishZone : MonoBehaviour
         meshRenderer.material = closedMaterial;
     }
 
+    /// <summary>
+    /// Sets the exit state to open
+    /// Changes material to open material
+    /// </summary>
     public void UnlockExit()
     {
         isOpen = true;

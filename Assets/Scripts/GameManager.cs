@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
@@ -13,7 +11,6 @@ public class GameManager : MonoBehaviour
     private FinishZone finishZone = null;
 
     public int currentScore { get; private set; } = 0;
-
     public bool isPaused { get; private set; } = false;
 
     private bool allowPause = true;
@@ -38,6 +35,9 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Pauses teh game and triggers the game over menu
+    /// </summary>
     public void GameOver()
     {
         Time.timeScale = 0;
@@ -45,6 +45,9 @@ public class GameManager : MonoBehaviour
         allowPause = false;
     }
 
+    /// <summary>
+    /// pauses the game and triggers the level completion menu
+    /// </summary>
     public void CompleteLevel()
     {
         //pause game
@@ -57,6 +60,10 @@ public class GameManager : MonoBehaviour
         allowPause = false;
     }
 
+    /// <summary>
+    /// Unpauses the game.
+    /// removes pause UI
+    /// </summary>
     public void UnpauseGame()
     {
         isPaused = false;

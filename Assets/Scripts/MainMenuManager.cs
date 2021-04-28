@@ -24,6 +24,10 @@ public class MainMenuManager : MonoBehaviour
     {
         Time.timeScale = 1;
     }
+
+    /// <summary>
+    /// enables the main menu main UI
+    /// </summary>
     public void EnableMainMenu()
     {
         mainMenu.SetActive(true);
@@ -33,7 +37,9 @@ public class MainMenuManager : MonoBehaviour
         EventSystem.current.SetSelectedGameObject(null);
         EventSystem.current.SetSelectedGameObject(mainMenuStartingButton);
     }
-
+    /// <summary>
+    /// Enables the Control Guide UI
+    /// </summary>
     public void EnableGuideMenu()
     {
         mainMenu.SetActive(false);
@@ -44,6 +50,7 @@ public class MainMenuManager : MonoBehaviour
         EventSystem.current.SetSelectedGameObject(guideMenuStartingButton);
     }
 
+    //enables the about menu
     public void EnableAboutMenu()
     {
         mainMenu.SetActive(false);
@@ -54,11 +61,17 @@ public class MainMenuManager : MonoBehaviour
         EventSystem.current.SetSelectedGameObject(aboutMenuStartingButton);
     }
 
+    /// <summary>
+    /// Loads the gameplay scene
+    /// </summary>
     public void PlayGame()
     {
         SceneManager.LoadScene("Main");
     }
 
+    /// <summary>
+    /// exits the application
+    /// </summary>
     public void QuitGame()
     {
         Application.Quit();

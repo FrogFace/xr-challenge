@@ -12,6 +12,8 @@ public class PlayerController : MonoBehaviour
     private float rotationSpeed = 10f;
     [SerializeField]
     private float maxHealth = 100f;
+    [SerializeField]
+    private int damageDealt = 20;
 
     [Header("References")]
     [SerializeField]
@@ -29,10 +31,10 @@ public class PlayerController : MonoBehaviour
     [SerializeField]
     private AudioClip itemPickupClip = null;
 
-    UIManager uiManager = null;
-    GameManager gameManager = null;
-    CharacterController charController = null;
-    Animator animator = null;
+    private UIManager uiManager = null;
+    private GameManager gameManager = null;
+    private CharacterController charController = null;
+    private Animator animator = null;
 
     private bool isAttacking = false;
     private bool isBlocking = false;
@@ -65,6 +67,7 @@ public class PlayerController : MonoBehaviour
 
         HandleMovement();
 
+        //update camera above player
         Camera.main.transform.position = transform.position + new Vector3(0, 10, -1);
     }
 
@@ -128,55 +131,6 @@ public class PlayerController : MonoBehaviour
         animator.SetFloat("Speed", Mathf.Lerp(animator.GetFloat("Speed"), charController.velocity.magnitude, 10 * Time.deltaTime));
     }
 
-    private IEnumerator RollForward()
-    {
-        isRolling = true;
-
-        yield return 0;
-
-        //get inputs
-        float xInput = Input.GetAxis("Horizontal");
-        float yInput = Input.GetAxis("Vertical");
-        Vector3 movement = new Vector3(xInput, 0, yInput);
-
-        if (movement != Vector3.zero) transform.rotation = Quaternion.LookRotation(movement);
-
-        animator.Play("Roll", 0);
-
-        while (animator.GetCurrentAnimatorStateInfo(0).IsName("Roll"))
-        {
-            charController.SimpleMove(transform.forward * 5f);
-            yield return 0;
-        }
-
-
-        isRolling = false;
-    }
-
-    private IEnumerator SwordAttack()
-    {
-        //begin attack, disable agent movement
-        isAttacking = true;
-
-        //start attack animation
-        animator.SetTrigger("Attack");
-        yield return 0;
-
-        //wait while transitioning to attack animation
-        while (animator.IsInTransition(0)) yield return 0;
-
-        //wait while attack animation playing
-        while (animator.GetCurrentAnimatorStateInfo(0).IsName("Attack 1")
-            || animator.GetCurrentAnimatorStateInfo(0).IsName("Attack 2")
-            || animator.GetCurrentAnimatorStateInfo(0).IsName("Attack 3"))
-        {
-            //reset attack trigger during first 50% of animation
-            if (animator.GetCurrentAnimatorStateInfo(0).normalizedTime <= 0.5f) animator.ResetTrigger("Attack");
-            yield return 0;
-        }
-
-        isAttacking = false;
-    }
 
     /// <summary>
     /// Rotates player to face velocity if moving otherwise rotates to face mouse position
@@ -249,6 +203,10 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Search for colliders in front of player, if player or breakable object attempt to deal damage to them
+    /// Should be called as animation event
+    /// </summary>
     public void TryDealDamage()
     {
         Collider[] hitColliders = Physics.OverlapSphere(transform.position + transform.forward, 0.8f);
@@ -259,29 +217,17 @@ public class PlayerController : MonoBehaviour
             //deal dmaamge
             if (col.CompareTag("Enemy"))
             {
-                col.GetComponent<EnemyController>().ModifyHealth(20);
+                EnemyController enemy = col.GetComponent<EnemyController>();
+                if (enemy) enemy.ModifyHealth(damageDealt);
             }
             else if (col.CompareTag("Breakable"))
             {
-                col.GetComponent<BreakableObject>().ModifyHealth(20);
+                BreakableObject breakable = col.GetComponent<BreakableObject>();
+                if (breakable) breakable.ModifyHealth(damageDealt);
             }
         }
     }
 
-    private IEnumerator EnterDeathState()
-    {
-        //stop agent and start death animation
-        animator.SetTrigger("Die");
-
-        //disable collider and EnemyController
-        GetComponent<Collider>().enabled = false;
-        charController.enabled = false;
-        enabled = false;
-
-        yield return new WaitForSeconds(3.5f);
-
-        gameManager.GameOver();
-    }
 
     /// <summary>
     /// Plays a wet or dry footstep sound depending on current surface 
@@ -344,4 +290,74 @@ public class PlayerController : MonoBehaviour
         //player stagger animation
         animator.SetTrigger("Stagger");
     }
+
+    #region Coroutines
+
+    private IEnumerator RollForward()
+    {
+        isRolling = true;
+
+        yield return 0;
+
+        //get inputs
+        float xInput = Input.GetAxis("Horizontal");
+        float yInput = Input.GetAxis("Vertical");
+        Vector3 movement = new Vector3(xInput, 0, yInput);
+
+        if (movement != Vector3.zero) transform.rotation = Quaternion.LookRotation(movement);
+
+        animator.Play("Roll", 0);
+
+        while (animator.GetCurrentAnimatorStateInfo(0).IsName("Roll"))
+        {
+            charController.SimpleMove(transform.forward * 5f);
+            yield return 0;
+        }
+
+
+        isRolling = false;
+    }
+
+    private IEnumerator SwordAttack()
+    {
+        //begin attack, disable agent movement
+        isAttacking = true;
+
+        //start attack animation
+        animator.SetTrigger("Attack");
+        yield return 0;
+
+        //wait while transitioning to attack animation
+        while (animator.IsInTransition(0)) yield return 0;
+
+        //wait while attack animation playing
+        while (animator.GetCurrentAnimatorStateInfo(0).IsName("Attack 1")
+            || animator.GetCurrentAnimatorStateInfo(0).IsName("Attack 2")
+            || animator.GetCurrentAnimatorStateInfo(0).IsName("Attack 3"))
+        {
+            //reset attack trigger during first 50% of animation
+            if (animator.GetCurrentAnimatorStateInfo(0).normalizedTime <= 0.5f) animator.ResetTrigger("Attack");
+            yield return 0;
+        }
+
+        isAttacking = false;
+    }
+
+
+    private IEnumerator EnterDeathState()
+    {
+        //stop agent and start death animation
+        animator.SetTrigger("Die");
+
+        //disable collider and EnemyController
+        GetComponent<Collider>().enabled = false;
+        charController.enabled = false;
+        enabled = false;
+
+        yield return new WaitForSeconds(3.5f);
+
+        gameManager.GameOver();
+    }
+
+    #endregion
 }
