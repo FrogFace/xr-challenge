@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
@@ -17,7 +18,8 @@ public class PlayerController : MonoBehaviour
     private Collider shieldcollider = null;
 
 
-    ScoreSystem scoreSystem = null;
+    UIManager uiManager = null;
+    GameManager gameManager = null;
     CharacterController charController = null;
     Animator animator = null;
 
@@ -28,18 +30,21 @@ public class PlayerController : MonoBehaviour
 
     private float currentHealth = 100f;
 
-
     // Start is called before the first frame update
     private void Start()
     {
-        scoreSystem = FindObjectOfType<ScoreSystem>();
+        uiManager = FindObjectOfType<UIManager>();
+        gameManager = FindObjectOfType<GameManager>();
         charController = GetComponent<CharacterController>();
         animator = GetComponentInChildren<Animator>();
+        uiManager.UpdateHealthBar(Mathf.Lerp(0, maxHealth, currentHealth));
     }
 
     // Update is called once per frame
     private void Update()
     {
+        if (gameManager.isPaused) return;
+
         HandleBlocking();
         HandleAttacking();
         HandleRolling();
@@ -48,8 +53,6 @@ public class PlayerController : MonoBehaviour
         allowMovement = !(isBlocking || isAttacking || isRolling);
 
         HandleMovement();
-
-
 
         Camera.main.transform.position = transform.position + new Vector3(0, 10, -1);
     }
@@ -63,7 +66,7 @@ public class PlayerController : MonoBehaviour
 
     private void HandleAttacking()
     {
-        if (Input.GetAxisRaw("Attack") == 1)
+        if (Input.GetButtonDown("Attack"))
         {
             animator.SetTrigger("Attack");
             if (!isAttacking) StartCoroutine(SwordAttack());
@@ -228,7 +231,7 @@ public class PlayerController : MonoBehaviour
                 pickUpValue = pickUpValue == -1 ? 0 : pickUpValue;
 
                 //add score to score system
-                scoreSystem.AddScore(pickUpValue);
+                gameManager.AddScore(pickUpValue);
             }
         }
     }
@@ -277,6 +280,9 @@ public class PlayerController : MonoBehaviour
 
         //play hit particle effects
         //foreach (ParticleSystem effect in hitEffects) effect.Play();
+
+        //Update HealthBar
+        uiManager.UpdateHealthBar(Mathf.InverseLerp(0, maxHealth, currentHealth));
 
         //Death Check, kill if health is 0
         if (currentHealth <= 0f)
