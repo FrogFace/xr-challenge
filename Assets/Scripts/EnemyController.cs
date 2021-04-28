@@ -39,6 +39,8 @@ public class EnemyController : MonoBehaviour
     private AudioClip diggingClip = null;
     [SerializeField]
     private AudioClip hitReactionclip = null;
+    [SerializeField]
+    private AudioClip deathClip = null;
 
 
     private GameManager gameManager = null;
@@ -134,7 +136,7 @@ public class EnemyController : MonoBehaviour
         agent.enabled = false;
         animator.SetTrigger("Die");
 
-        // <-- spawn remains / effects here
+        AudioSource.PlayClipAtPoint(deathClip, transform.position, 0.6f);
 
         //disable collider and EnemyController
         GetComponent<Collider>().enabled = false;

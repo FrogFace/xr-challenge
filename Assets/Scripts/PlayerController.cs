@@ -24,7 +24,8 @@ public class PlayerController : MonoBehaviour
     private AudioClip wetFootstepClip = null;
     [SerializeField]
     private AudioClip swordSwingClip = null;
-
+    [SerializeField]
+    private AudioClip hitReactionclip = null;
 
     UIManager uiManager = null;
     GameManager gameManager = null;
@@ -317,8 +318,7 @@ public class PlayerController : MonoBehaviour
         currentHealth -= changeValue;
         currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
 
-        //play hit particle effects
-        //foreach (ParticleSystem effect in hitEffects) effect.Play();
+        AudioSource.PlayClipAtPoint(hitReactionclip, transform.position, 1);
 
         //Update HealthBar
         uiManager.UpdateHealthBar(Mathf.InverseLerp(0, maxHealth, currentHealth));
