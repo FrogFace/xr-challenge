@@ -17,6 +17,17 @@ public class PlayerController : MonoBehaviour
     [SerializeField]
     private Collider shieldcollider = null;
 
+    [Header("Audio Clips")]
+    [SerializeField]
+    private AudioClip dryFootstepClip = null;
+    [SerializeField]
+    private AudioClip wetFootstepClip = null;
+    [SerializeField]
+    private AudioClip swordSwingClip = null;
+    [SerializeField]
+    private AudioClip hitReactionclip = null;
+    [SerializeField]
+    private AudioClip itemPickupClip = null;
 
     UIManager uiManager = null;
     GameManager gameManager = null;
@@ -232,6 +243,8 @@ public class PlayerController : MonoBehaviour
 
                 //add score to score system
                 gameManager.AddScore(pickUpValue);
+
+                if (pickUpValue > 0) AudioSource.PlayClipAtPoint(itemPickupClip, transform.position, 0.5f);
             }
         }
     }
@@ -265,10 +278,39 @@ public class PlayerController : MonoBehaviour
         charController.enabled = false;
         enabled = false;
 
-        yield return  new WaitForSeconds(3.5f);
+        yield return new WaitForSeconds(3.5f);
 
         gameManager.GameOver();
-    } 
+    }
+
+    /// <summary>
+    /// Plays a wet or dry footstep sound depending on current surface 
+    /// </summary>
+    public void PlayfootstepSound()
+    {
+        //check if standing in water
+        if (Physics.Raycast(transform.position, -Vector3.up, out RaycastHit hit))
+        {
+            if (hit.transform.CompareTag("Water"))
+            {
+                //play wetfootstep
+                AudioSource.PlayClipAtPoint(wetFootstepClip, transform.position, 0.3f);
+                return;
+            }
+        }
+
+        //play normal footstep
+        AudioSource.PlayClipAtPoint(dryFootstepClip, transform.position, 0.5f);
+    }
+
+    /// <summary>
+    /// Plays a sword swing sound effect
+    /// </summary>
+    public void PlaySwordSwingSound()
+    {
+        //play normal footstep
+        AudioSource.PlayClipAtPoint(swordSwingClip, transform.position, 0.5f);
+    }
 
     /// <summary>
     /// Change the current health value of the player 
@@ -280,8 +322,7 @@ public class PlayerController : MonoBehaviour
         currentHealth -= changeValue;
         currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
 
-        //play hit particle effects
-        //foreach (ParticleSystem effect in hitEffects) effect.Play();
+        AudioSource.PlayClipAtPoint(hitReactionclip, transform.position, 1);
 
         //Update HealthBar
         uiManager.UpdateHealthBar(Mathf.InverseLerp(0, maxHealth, currentHealth));

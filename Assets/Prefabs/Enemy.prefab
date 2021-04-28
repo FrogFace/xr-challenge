@@ -22206,8 +22206,12 @@ MonoBehaviour:
   - {fileID: 7617670713201080907}
   - {fileID: 6348392210133247102}
   - {fileID: 5854687238654800439}
-  gameManager: {fileID: 0}
   minimapIcon: {fileID: 7357003969290673770}
+  swordSwingClip: {fileID: 8300000, guid: afeeec8a1bbbdc6479442f5a6efc883a, type: 3}
+  shieldHitClip: {fileID: 8300000, guid: fc1cdf157884ef34a9216aaa671250da, type: 3}
+  diggingClip: {fileID: 8300000, guid: e2e56cae7ca83f24ea77a1a72d793040, type: 3}
+  hitReactionclip: {fileID: 8300000, guid: ed358bfeae8a2214881523bfefb16e3a, type: 3}
+  deathClip: {fileID: 8300000, guid: 71cdca03ee902134a87db1cf78c42038, type: 3}
 --- !u!1 &7617670713060161022
 GameObject:
   m_ObjectHideFlags: 0

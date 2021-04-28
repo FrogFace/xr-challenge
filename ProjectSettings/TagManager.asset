@@ -9,6 +9,7 @@ TagManager:
   - Enemy
   - Breakable
   - Gold
+  - Water
   layers:
   - Default
   - TransparentFX
