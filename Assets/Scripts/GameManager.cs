@@ -14,12 +14,30 @@ public class GameManager : MonoBehaviour
 
     public int currentScore { get; private set; } = 0;
 
+    public bool isPaused { get; private set; } = false;
+
     private void Start()
     {
         //subscribe to all of the star pickup events
         foreach (Pickup star in pickupArray) star.OnPickUp += FinishUnlockCheck;
 
         uiManager.UpdateStarText(0, pickupArray.Length);
+    }
+
+    private void Update()
+    {
+        if (Input.GetButtonDown("Pause")) isPaused = !isPaused;
+
+        if (isPaused)
+        {
+            Time.timeScale = 0;
+            uiManager.SetPauseUI(true);
+        }
+        else
+        {
+            Time.timeScale = 1;
+            uiManager.SetPauseUI(false);
+        }
     }
 
     /// <summary>

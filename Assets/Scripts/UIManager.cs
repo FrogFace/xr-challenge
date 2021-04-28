@@ -3,6 +3,7 @@ using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
 {
+    [Header("References")]
     [SerializeField]
     private Text scoreText = null;
     [SerializeField]
@@ -10,7 +11,11 @@ public class UIManager : MonoBehaviour
     [SerializeField]
     private Slider HealthBar = null;
     [SerializeField]
-    private GameManager gameManager = null; 
+    private GameManager gameManager = null;
+    [SerializeField]
+    private GameObject PauseUI = null; 
+    [SerializeField]
+    private GameObject gameplayUI = null;  
 
     public void UpdateScoreText(int currentScore)
     {
@@ -25,5 +30,11 @@ public class UIManager : MonoBehaviour
     public void UpdateStarText(int currentStars, int totalStars)
     {
         starText.text = $"Stars: {currentStars} / {totalStars}";
+    }
+
+    public void SetPauseUI(bool isPaused)
+    {
+        PauseUI.SetActive(isPaused);
+        gameplayUI.SetActive(!isPaused);
     }
 }
