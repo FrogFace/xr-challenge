@@ -26,6 +26,8 @@ public class PlayerController : MonoBehaviour
     private AudioClip swordSwingClip = null;
     [SerializeField]
     private AudioClip hitReactionclip = null;
+    [SerializeField]
+    private AudioClip itemPickupClip = null;
 
     UIManager uiManager = null;
     GameManager gameManager = null;
@@ -241,6 +243,8 @@ public class PlayerController : MonoBehaviour
 
                 //add score to score system
                 gameManager.AddScore(pickUpValue);
+
+                if (pickUpValue > 0) AudioSource.PlayClipAtPoint(itemPickupClip, transform.position, 0.5f);
             }
         }
     }
