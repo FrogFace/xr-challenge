@@ -255,18 +255,20 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private void EnterDeathState()
+    private IEnumerator EnterDeathState()
     {
         //stop agent and start death animation
         animator.SetTrigger("Die");
-
-        // <-- spawn remains / effects here
 
         //disable collider and EnemyController
         GetComponent<Collider>().enabled = false;
         charController.enabled = false;
         enabled = false;
-    }
+
+        yield return  new WaitForSeconds(3.5f);
+
+        gameManager.GameOver();
+    } 
 
     /// <summary>
     /// Change the current health value of the player 
@@ -287,7 +289,7 @@ public class PlayerController : MonoBehaviour
         //Death Check, kill if health is 0
         if (currentHealth <= 0f)
         {
-            EnterDeathState();
+            StartCoroutine(EnterDeathState());
             return;
         }
 
@@ -300,7 +302,5 @@ public class PlayerController : MonoBehaviour
 
         //player stagger animation
         animator.SetTrigger("Stagger");
-
-        //<-- update Health Bar UI
     }
 }

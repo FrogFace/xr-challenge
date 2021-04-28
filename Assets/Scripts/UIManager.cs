@@ -19,7 +19,7 @@ public class UIManager : MonoBehaviour
     [SerializeField]
     private GameObject gameplayUI = null;
     [SerializeField] 
-    GameObject exitHint = null;
+    private GameObject exitHint = null;
     [SerializeField]
     private GameObject exitConfirmationUI = null;
     [SerializeField]
@@ -31,7 +31,9 @@ public class UIManager : MonoBehaviour
     [SerializeField]
     private GameObject completionExitButton = null;
     [SerializeField]
-    private string mainMenuScene = string.Empty;
+    private GameObject gameOverUI = null;
+    [SerializeField]
+    private GameObject gameOverContinueButton = null;
 
     public void UpdateScoreText(int currentScore)
     {
@@ -53,6 +55,18 @@ public class UIManager : MonoBehaviour
         levelCompletionUI.SetActive(true);
         gameplayUI.SetActive(false);
         EventSystem.current.SetSelectedGameObject(completionExitButton);
+    }
+
+    public void OpenGameOverMenu()
+    {
+        gameplayUI.SetActive(false);
+        gameOverUI.SetActive(true);
+        EventSystem.current.SetSelectedGameObject(gameOverContinueButton);
+    }
+
+    public void ReloadScene()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
     public void SetPauseUI(bool isPaused)
@@ -79,6 +93,6 @@ public class UIManager : MonoBehaviour
 
     public void ExitToMenu()
     {
-        SceneManager.LoadScene(mainMenuScene);
+        SceneManager.LoadScene("MainMemu");
     }
 }

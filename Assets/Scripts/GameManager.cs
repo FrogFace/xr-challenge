@@ -20,6 +20,8 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
+        Time.timeScale = 1;
+
         //subscribe to all of the star pickup events
         foreach (Pickup star in pickupArray) star.OnPickUp += FinishUnlockCheck;
 
@@ -34,6 +36,13 @@ public class GameManager : MonoBehaviour
             uiManager.SetPauseUI(isPaused);
             Time.timeScale = isPaused ? 0 : 1;
         }
+    }
+
+    public void GameOver()
+    {
+        Time.timeScale = 0;
+        uiManager.OpenGameOverMenu();
+        allowPause = false;
     }
 
     public void CompleteLevel()
