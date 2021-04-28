@@ -43,6 +43,8 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     private void Update()
     {
+        if (gameManager.isPaused) return;
+
         HandleBlocking();
         HandleAttacking();
         HandleRolling();
@@ -64,7 +66,7 @@ public class PlayerController : MonoBehaviour
 
     private void HandleAttacking()
     {
-        if (Input.GetAxisRaw("Attack") == 1)
+        if (Input.GetButtonDown("Attack"))
         {
             animator.SetTrigger("Attack");
             if (!isAttacking) StartCoroutine(SwordAttack());
