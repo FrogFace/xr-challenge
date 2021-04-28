@@ -9669,7 +9669,7 @@ MonoBehaviour:
   normalModel: {fileID: 769061206261163953}
   damagedModel: {fileID: 769061206071863605}
   destroyedModel: {fileID: 769061207286576075}
-  currentHealth: 40
+  woodBreakClip: {fileID: 8300000, guid: 700cdd63fc842844f968d0ce9ccb8ac9, type: 3}
 --- !u!65 &769061206436313280
 BoxCollider:
   m_ObjectHideFlags: 0
