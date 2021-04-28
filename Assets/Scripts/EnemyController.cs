@@ -12,6 +12,8 @@ public class EnemyController : MonoBehaviour
     [SerializeField]
     private float minAttackDistance = 1.5f;
     [SerializeField]
+    private int damageDealt = 10;
+    [SerializeField]
     private float attackCooldown = 3f;
     [SerializeField]
     private bool startUnderground = false;
@@ -90,26 +92,6 @@ public class EnemyController : MonoBehaviour
         attackCooldownTimer += Time.deltaTime;
     }
 
-    private IEnumerator DigOutOfGround()
-    {
-        //prevent other behavior runnign while digging animation active
-        enabled = false;
-        animator.Play("DigOut");
-        AudioSource.PlayClipAtPoint(diggingClip, transform.position, 1);
-
-        //Randomise digging animation speed for variation
-        animator.SetFloat("DigSpeedModifier", Random.Range(0.8f, 1.2f));
-
-        //play dig particle effects
-        foreach (ParticleSystem effect in digParticles) effect.Play();
-
-        //wait while digging animation is playing
-        yield return 0;
-        while (animator.GetCurrentAnimatorStateInfo(0).IsName("DigOut")) yield return 0;
-
-        //enable other behaviors once digging  animtation finished
-        enabled = true;
-    }
 
     private void RandomizeCharacterModel()
     {
@@ -195,14 +177,16 @@ public class EnemyController : MonoBehaviour
         bool hitShield = false;
         bool hitPlayer = false;
 
+        //check if attack hits player or player shield
         Collider[] colliderHitArray = Physics.OverlapSphere(transform.position + transform.forward + transform.up, 0.7f);
         foreach (Collider col in colliderHitArray)
         {
             if (col.CompareTag("Shield")) hitShield = true;
             if (col.CompareTag("Player")) hitPlayer = true;
-
         }
 
+        //if shield is hit, stagger
+        //if player hit without shield damage player
         if (hitShield)
         {
             StopCoroutine(SwordAttack());
@@ -216,7 +200,7 @@ public class EnemyController : MonoBehaviour
         }
         else if (hitPlayer)
         {
-            player.GetComponent<PlayerController>().ModifyHealth(10);
+            player.GetComponent<PlayerController>().ModifyHealth(damageDealt);
         }
     }
 
@@ -235,6 +219,29 @@ public class EnemyController : MonoBehaviour
     {
         //play normal footstep
         AudioSource.PlayClipAtPoint(swordSwingClip, transform.position, 0.5f);
+    }
+
+    #region Coroutines
+
+    private IEnumerator DigOutOfGround()
+    {
+        //prevent other behavior runnign while digging animation active
+        enabled = false;
+        animator.Play("DigOut");
+        AudioSource.PlayClipAtPoint(diggingClip, transform.position, 1);
+
+        //Randomise digging animation speed for variation
+        animator.SetFloat("DigSpeedModifier", Random.Range(0.8f, 1.2f));
+
+        //play dig particle effects
+        foreach (ParticleSystem effect in digParticles) effect.Play();
+
+        //wait while digging animation is playing
+        yield return 0;
+        while (animator.GetCurrentAnimatorStateInfo(0).IsName("DigOut")) yield return 0;
+
+        //enable other behaviors once digging  animtation finished
+        enabled = true;
     }
 
     private IEnumerator SwordAttack()
@@ -281,4 +288,6 @@ public class EnemyController : MonoBehaviour
         //disable the gameobject
         this.gameObject.SetActive(false);
     }
+
+    #endregion
 }
