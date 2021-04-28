@@ -93,6 +93,6 @@ public class UIManager : MonoBehaviour
 
     public void ExitToMenu()
     {
-        SceneManager.LoadScene("MainMemu");
+        SceneManager.LoadScene("MainMenu");
     }
 }
